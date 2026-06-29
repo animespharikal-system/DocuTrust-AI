@@ -1,46 +1,69 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ShieldCheck, User, Mail, Lock, Eye, EyeOff, Terminal, CheckCircle2 } from 'lucide-react';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  ShieldCheck,
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Terminal,
+  CheckCircle2,
+} from "lucide-react";
+import { registerUser } from "../services/authService";
 
 export default function Signup({ onLogin }) {
   const navigate = useNavigate();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   const validate = () => {
     const tempErrors = {};
-    if (!name) tempErrors.name = 'Full name is required';
-    if (!email) tempErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(email)) tempErrors.email = 'Invalid email address';
-    if (!password) tempErrors.password = 'Password is required';
-    else if (password.length < 6) tempErrors.password = 'Password must be at least 6 characters';
-    if (password !== confirmPassword) tempErrors.confirmPassword = 'Passwords do not match';
-    
+    if (!name) tempErrors.name = "Full name is required";
+    if (!email) tempErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(email))
+      tempErrors.email = "Invalid email address";
+    if (!password) tempErrors.password = "Password is required";
+    else if (password.length < 6)
+      tempErrors.password = "Password must be at least 6 characters";
+    if (password !== confirmPassword)
+      tempErrors.confirmPassword = "Passwords do not match";
+
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!validate()) return;
 
     setIsLoading(true);
-    // Simulate API request
-    setTimeout(() => {
+
+    try {
+      await registerUser({
+        name,
+        email,
+        password,
+      });
+
+      alert("Registration Successful!");
+
+      navigate("/login");
+    } catch (error) {
+      alert(error.response?.data?.detail || "Registration Failed");
+    } finally {
       setIsLoading(false);
-      onLogin(); // Set authenticated state
-      navigate('/dashboard');
-    }, 1200);
+    }
   };
 
   return (
     <div className="min-h-[85svh] grid lg:grid-cols-2 rounded-2xl overflow-hidden border border-slate-800 bg-slate-950">
-      
       {/* Left side: Branding & Visual check list */}
       <div className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-12 relative overflow-hidden">
         <div className="grid-bg absolute inset-0 opacity-20"></div>
@@ -50,7 +73,9 @@ export default function Signup({ onLogin }) {
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white">
             <ShieldCheck className="h-5 w-5" />
           </div>
-          <span className="font-bold text-white text-lg tracking-tight">DocuTrust AI</span>
+          <span className="font-bold text-white text-lg tracking-tight">
+            DocuTrust AI
+          </span>
         </div>
 
         <div className="space-y-6 relative z-10">
@@ -58,7 +83,8 @@ export default function Signup({ onLogin }) {
             Security. Compliance. Authenticity.
           </h2>
           <p className="text-slate-400 text-sm max-w-md leading-relaxed">
-            Configure automated rules, audit your operational contracts, and prevent corporate fraud before it happens.
+            Configure automated rules, audit your operational contracts, and
+            prevent corporate fraud before it happens.
           </p>
 
           <div className="space-y-3.5 text-slate-300 text-xs">
@@ -86,14 +112,15 @@ export default function Signup({ onLogin }) {
       <div className="flex items-center justify-center p-6 sm:p-12 relative">
         <div className="w-full max-w-md space-y-8">
           <div className="space-y-2 text-center lg:text-left">
-            <h1 className="text-3xl font-bold tracking-tight text-white">Create your account</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-white">
+              Create your account
+            </h1>
             <p className="text-sm text-slate-400">
               Get started with our unified document trust suite
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            
             {/* Name Field */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
@@ -107,12 +134,16 @@ export default function Signup({ onLogin }) {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
                   className={`w-full bg-slate-900 border ${
-                    errors.name ? 'border-rose-500' : 'border-slate-800 focus:border-blue-500'
+                    errors.name
+                      ? "border-rose-500"
+                      : "border-slate-800 focus:border-blue-500"
                   } rounded-lg py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 outline-none transition-all`}
                 />
               </div>
               {errors.name && (
-                <p className="text-xs text-rose-400 mt-1 font-medium">{errors.name}</p>
+                <p className="text-xs text-rose-400 mt-1 font-medium">
+                  {errors.name}
+                </p>
               )}
             </div>
 
@@ -129,12 +160,16 @@ export default function Signup({ onLogin }) {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
                   className={`w-full bg-slate-900 border ${
-                    errors.email ? 'border-rose-500' : 'border-slate-800 focus:border-blue-500'
+                    errors.email
+                      ? "border-rose-500"
+                      : "border-slate-800 focus:border-blue-500"
                   } rounded-lg py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 outline-none transition-all`}
                 />
               </div>
               {errors.email && (
-                <p className="text-xs text-rose-400 mt-1 font-medium">{errors.email}</p>
+                <p className="text-xs text-rose-400 mt-1 font-medium">
+                  {errors.email}
+                </p>
               )}
             </div>
 
@@ -146,12 +181,14 @@ export default function Signup({ onLogin }) {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className={`w-full bg-slate-900 border ${
-                    errors.password ? 'border-rose-500' : 'border-slate-800 focus:border-blue-500'
+                    errors.password
+                      ? "border-rose-500"
+                      : "border-slate-800 focus:border-blue-500"
                   } rounded-lg py-2.5 pl-10 pr-10 text-sm text-white placeholder-slate-500 outline-none transition-all`}
                 />
                 <button
@@ -159,11 +196,17 @@ export default function Signup({ onLogin }) {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
                 >
-                  {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                  {showPassword ? (
+                    <EyeOff className="h-4.5 w-4.5" />
+                  ) : (
+                    <Eye className="h-4.5 w-4.5" />
+                  )}
                 </button>
               </div>
               {errors.password && (
-                <p className="text-xs text-rose-400 mt-1 font-medium">{errors.password}</p>
+                <p className="text-xs text-rose-400 mt-1 font-medium">
+                  {errors.password}
+                </p>
               )}
             </div>
 
@@ -175,17 +218,21 @@ export default function Signup({ onLogin }) {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
                   className={`w-full bg-slate-900 border ${
-                    errors.confirmPassword ? 'border-rose-500' : 'border-slate-800 focus:border-blue-500'
+                    errors.confirmPassword
+                      ? "border-rose-500"
+                      : "border-slate-800 focus:border-blue-500"
                   } rounded-lg py-2.5 pl-10 pr-10 text-sm text-white placeholder-slate-500 outline-none transition-all`}
                 />
               </div>
               {errors.confirmPassword && (
-                <p className="text-xs text-rose-400 mt-1 font-medium">{errors.confirmPassword}</p>
+                <p className="text-xs text-rose-400 mt-1 font-medium">
+                  {errors.confirmPassword}
+                </p>
               )}
             </div>
 
@@ -198,12 +245,18 @@ export default function Signup({ onLogin }) {
                 className="h-4 w-4 rounded border-slate-800 bg-slate-900 text-blue-600 focus:ring-blue-600/30"
               />
               <label htmlFor="terms" className="text-xs text-slate-400">
-                I agree to the{' '}
-                <Link to="#" className="text-blue-400 hover:text-blue-300 font-semibold">
+                I agree to the{" "}
+                <Link
+                  to="#"
+                  className="text-blue-400 hover:text-blue-300 font-semibold"
+                >
                   Terms of Service
-                </Link>{' '}
-                and{' '}
-                <Link to="#" className="text-blue-400 hover:text-blue-300 font-semibold">
+                </Link>{" "}
+                and{" "}
+                <Link
+                  to="#"
+                  className="text-blue-400 hover:text-blue-300 font-semibold"
+                >
                   Privacy Policy
                 </Link>
               </label>
@@ -218,20 +271,22 @@ export default function Signup({ onLogin }) {
               {isLoading ? (
                 <div className="h-5 w-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
               ) : (
-                'Create Pro Account'
+                "Create Pro Account"
               )}
             </button>
           </form>
 
           <p className="text-center text-xs text-slate-400 mt-6">
-            Already have an account?{' '}
-            <Link to="/login" className="text-blue-400 hover:text-blue-300 font-semibold">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-blue-400 hover:text-blue-300 font-semibold"
+            >
               Sign in
             </Link>
           </p>
         </div>
       </div>
-
     </div>
   );
 }
