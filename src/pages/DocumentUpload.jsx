@@ -132,10 +132,11 @@ const SEED_DOCS = [
 
 // ─── Upload pipeline steps ─────────────────────────────────────────────────────
 const PIPELINE_STEPS = [
-  "Extracting layout & OCR structures",
-  "Generating semantic text chunks",
-  "Computing vector embeddings",
-  "Indexing into vector database",
+  "Uploading secure document",
+  "Extracting document text",
+  "Running Gemini AI analysis",
+  "Generating authenticity report",
+  "Opening report",
 ];
 
 // ─── Helper: file-type icon + color ───────────────────────────────────────────
@@ -341,7 +342,7 @@ function UploadToast({ upload, onDismiss }) {
           <div className="flex items-center gap-2 pt-1 border-t border-zinc-800">
             <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
             <span className="text-[11px] font-semibold text-emerald-400">
-              Successfully indexed — {upload.chunks} chunks created
+              Analysis completed successfully
             </span>
           </div>
         )}
@@ -369,6 +370,7 @@ export default function DocumentUpload() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [activeUpload, setActiveUpload] = useState(null);
+  const [currentStep, setCurrentStep] = useState(0);
 
   // ── Drag handlers ────────────────────────────────────────────────────────────
   const handleDrag = useCallback((e) => {
@@ -401,25 +403,63 @@ export default function DocumentUpload() {
         name: file.name,
         size: `${(file.size / 1024).toFixed(1)} KB`,
         type: "PDF",
-        step: 1,
+        step: 0,
+        chunks: 0,
       });
+
+      // Step 1
+      setTimeout(() => {
+        setActiveUpload((prev) => ({
+          ...prev,
+          step: 1,
+        }));
+      }, 600);
 
       // Upload document
       const upload = await uploadDocument(file, token);
 
+      // Step 2
       setActiveUpload((prev) => ({
         ...prev,
         step: 2,
       }));
 
-      // Analyze document
+      // Small delay so user sees the animation
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
+      // Gemini analysis
       const analysis = await analyzeDocument(upload.document.id, token);
 
+      // Step 3
+      setActiveUpload((prev) => ({
+        ...prev,
+        step: 3,
+      }));
+
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      // Step 4
       setActiveUpload((prev) => ({
         ...prev,
         step: 4,
+        chunks: analysis.key_entities?.length || 10,
       }));
 
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const newDoc = {
+        id: upload.document.id,
+        name: upload.document.original_filename,
+        type: "PDF",
+        size: `${(file.size / 1024).toFixed(1)} KB`,
+        pages: "-",
+        chunks: analysis.key_entities?.length || 10,
+        uploadedAt: new Date().toISOString().split("T")[0],
+        status: "indexed",
+        score: analysis.confidence,
+        owner: "You",
+      };
+
+      setDocuments((prev) => [newDoc, ...prev]);
       navigate("/analysis-report", {
         state: analysis,
       });
