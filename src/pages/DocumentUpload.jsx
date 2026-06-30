@@ -1,7 +1,9 @@
 import React, { useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+
 import { uploadDocument, analyzeDocument } from "../services/documentService";
+
 import {
   UploadCloud,
   FileText,
@@ -135,8 +137,6 @@ const PIPELINE_STEPS = [
   "Computing vector embeddings",
   "Indexing into vector database",
 ];
-
-const navigate = useNavigate();
 
 // ─── Helper: file-type icon + color ───────────────────────────────────────────
 function FileTypeIcon({ type, size = "md" }) {
@@ -360,6 +360,7 @@ function UploadToast({ upload, onDismiss }) {
 
 // ─── Main page component ───────────────────────────────────────────────────────
 export default function DocumentUpload() {
+  const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [dragActive, setDragActive] = useState(false);
   const [documents, setDocuments] = useState(SEED_DOCS);
