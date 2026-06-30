@@ -212,7 +212,11 @@ export default function Login({ onLogin }) {
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={onLogin}
+              onClick={() =>
+                alert(
+                  "Google Sign-In is not implemented yet. Please use your Email and Password.",
+                )
+              }
               className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800/80 border border-slate-800 rounded-lg py-2.5 text-xs text-slate-300 transition-all font-medium"
             >
               <svg
@@ -223,9 +227,14 @@ export default function Login({ onLogin }) {
               </svg>
               Google
             </button>
+
             <button
               type="button"
-              onClick={onLogin}
+              onClick={() =>
+                alert(
+                  "GitHub Sign-In is not implemented yet. Please use your Email and Password.",
+                )
+              }
               className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800/80 border border-slate-800 rounded-lg py-2.5 text-xs text-slate-300 transition-all font-medium"
             >
               <svg
