@@ -15,12 +15,24 @@ export default function Navbar({
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    const name = localStorage.getItem("user_name");
+    const loadUser = () => {
+      const name = localStorage.getItem("user_name");
 
-    if (name) {
-      setUserName(name);
-    }
-  }, []);
+      if (name) {
+        setUserName(name);
+      } else {
+        setUserName("User");
+      }
+    };
+
+    loadUser();
+
+    window.addEventListener("storage", loadUser);
+
+    return () => {
+      window.removeEventListener("storage", loadUser);
+    };
+  }, [location.pathname]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-[#09090b]/80 backdrop-blur-md">
@@ -123,7 +135,12 @@ export default function Navbar({
                 {/* Logout Action */}
                 <button
                   onClick={() => {
+                    localStorage.removeItem("access_token");
+                    localStorage.removeItem("user_email");
+                    localStorage.removeItem("user_name");
+
                     onLogout();
+
                     navigate("/");
                   }}
                   className="rounded-lg p-1.5 text-zinc-500 hover:bg-rose-950/20 hover:text-rose-400 transition-colors"
