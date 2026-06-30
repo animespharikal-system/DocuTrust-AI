@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck, Mail, Lock, Eye, EyeOff, Terminal } from "lucide-react";
 import { loginUser } from "../services/authService";
+import { getProfile } from "../services/profileService";
 
 export default function Login({ onLogin }) {
   const navigate = useNavigate();
@@ -38,8 +39,12 @@ export default function Login({ onLogin }) {
       });
 
       localStorage.setItem("access_token", response.access_token);
-
       localStorage.setItem("user_email", email);
+
+      // Fetch logged-in user's profile
+      const profile = await getProfile();
+
+      localStorage.setItem("user_name", profile.name);
 
       onLogin();
 

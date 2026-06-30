@@ -1,17 +1,30 @@
-import React from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Shield, Bell, LogOut, User, Menu, X, Globe } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Shield, Bell, LogOut, User, Menu, X, Globe } from "lucide-react";
 
-export default function Navbar({ isAuthenticated, onLogout, toggleSidebar, isSidebarOpen }) {
+export default function Navbar({
+  isAuthenticated,
+  onLogout,
+  toggleSidebar,
+  isSidebarOpen,
+}) {
   const navigate = useNavigate();
   const location = useLocation();
-  const isAuthPage = ['/login', '/signup'].includes(location.pathname);
-  const isLandingPage = location.pathname === '/';
+  const isAuthPage = ["/login", "/signup"].includes(location.pathname);
+  const isLandingPage = location.pathname === "/";
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const name = localStorage.getItem("user_name");
+
+    if (name) {
+      setUserName(name);
+    }
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-[#09090b]/80 backdrop-blur-md">
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
-        
         {/* Left Side Logo */}
         <div className="flex items-center gap-3">
           {isAuthenticated && (
@@ -19,11 +32,18 @@ export default function Navbar({ isAuthenticated, onLogout, toggleSidebar, isSid
               onClick={toggleSidebar}
               className="inline-flex items-center justify-center rounded-md p-2 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 focus:outline-none md:hidden"
             >
-              {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isSidebarOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
             </button>
           )}
-          
-          <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-2.5 group">
+
+          <Link
+            to={isAuthenticated ? "/dashboard" : "/"}
+            className="flex items-center gap-2.5 group"
+          >
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
               <Shield className="h-5 w-5" />
             </div>
@@ -39,9 +59,24 @@ export default function Navbar({ isAuthenticated, onLogout, toggleSidebar, isSid
             <>
               {isLandingPage && (
                 <div className="hidden md:flex items-center gap-7 text-xs font-semibold text-zinc-400 tracking-wide uppercase">
-                  <a href="#features" className="hover:text-white transition-colors">Features</a>
-                  <a href="#demo" className="hover:text-white transition-colors">Integrity Demo</a>
-                  <a href="#pricing" className="hover:text-white transition-colors">Pricing model</a>
+                  <a
+                    href="#features"
+                    className="hover:text-white transition-colors"
+                  >
+                    Features
+                  </a>
+                  <a
+                    href="#demo"
+                    className="hover:text-white transition-colors"
+                  >
+                    Integrity Demo
+                  </a>
+                  <a
+                    href="#pricing"
+                    className="hover:text-white transition-colors"
+                  >
+                    Pricing model
+                  </a>
                 </div>
               )}
               {!isAuthPage && (
@@ -63,10 +98,9 @@ export default function Navbar({ isAuthenticated, onLogout, toggleSidebar, isSid
             </>
           ) : (
             <div className="flex items-center gap-4">
-              
               {/* Notification icon */}
-              <button 
-                onClick={() => alert('Notifications dashboard is clear')}
+              <button
+                onClick={() => alert("Notifications dashboard is clear")}
                 className="relative rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 transition-colors"
               >
                 <Bell className="h-4.5 w-4.5" />
@@ -77,15 +111,12 @@ export default function Navbar({ isAuthenticated, onLogout, toggleSidebar, isSid
 
               {/* User Avatar Action */}
               <div className="flex items-center gap-3">
-                <Link
-                  to="/profile"
-                  className="flex items-center gap-2.5 group"
-                >
+                <Link to="/profile" className="flex items-center gap-2.5 group">
                   <div className="h-8 w-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 group-hover:border-zinc-700 transition-all overflow-hidden relative shadow-inner">
                     <User className="h-4 w-4" />
                   </div>
                   <span className="hidden md:block text-xs font-semibold text-zinc-400 group-hover:text-zinc-200 transition-colors">
-                    Alex Carter
+                    {userName || "User"}
                   </span>
                 </Link>
 
@@ -93,7 +124,7 @@ export default function Navbar({ isAuthenticated, onLogout, toggleSidebar, isSid
                 <button
                   onClick={() => {
                     onLogout();
-                    navigate('/');
+                    navigate("/");
                   }}
                   className="rounded-lg p-1.5 text-zinc-500 hover:bg-rose-950/20 hover:text-rose-400 transition-colors"
                   title="Logout"
