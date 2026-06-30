@@ -413,7 +413,7 @@ export default function DocumentUpload() {
       }));
 
       // Analyze document
-      const analysis = await analyzeDocument(upload.document_id, token);
+      const analysis = await analyzeDocument(upload.document.id, token);
 
       setActiveUpload((prev) => ({
         ...prev,
